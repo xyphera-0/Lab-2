@@ -13,13 +13,31 @@
 #include "engr2350_msp432.h"
 
 // Add function prototypes here as needed.
-
+void GPIO_Init();
+void Timer_Init();
 
 // Add global variables here as needed.
-
+//uint8_t biLED = 0; // **used bit masking** PIN 6.0 & 6.1
+uint8_t PB1; // PIN 5.6
+uint8_t BMP0;
+uint8_t BMP1;
+uint8_t BMP2;
+uint8_t BMP3;
+uint8_t BMP4;
+uint8_t BMP5;
+Timer_A_UpModeConfig config;
 
 int main( void ) {    /** Main Function ****/
-  
+
+    printf("\r\n\n"
+            "In this game, there are 10 rounds where the LED will light up \r\n"
+            "and you will have to press the corresponding bumper button to \r\n"
+            "the color. You start with one color and it will increase each \r\n"
+            "round by one. Press the wrong color, start all over. Press the\r\n"
+            "right one, continue until the 10th round and win!\r\n"
+            "======================\r\n"
+            "Press button to start!\r\n"
+            "======================\r\n");
     // Add local variables here as needed.
 
     // We always call the SysInit function first to set up the 
@@ -35,5 +53,23 @@ int main( void ) {    /** Main Function ****/
 }    /** End Main Function ****/   
 
 // Add function declarations here as needed
+void GPIOInint(){
+    P6DIR |= 0x03; // Set P6.0 and P6.1 (led)
+    PB1 = GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
+    BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
+    BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
+    BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
+    BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
+    BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
+    BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
 
+}
+
+void Timer_Init() {
+    config.clockSource = TIMER_A_CLOCKSOURCE_SMCLK;
+    config.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_64;
+    config.timerPeriod = 000000;
+    Timer_A_configureUpMode(TIMER_A2_BASE, &config);
+    Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
+}
 // Add interrupt functions last so they are easy to find
