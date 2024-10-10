@@ -37,9 +37,9 @@ int main( void ) {    /** Main Function ****/
     // We always call the SysInit function first to set up the
     // microcontroller for how we are going to use it.
     SysInit();
-    GPIOInit();
-
+    GPIO_Init();
     Timer_Init();
+
     printf("\r\n\n"
            "===========\r\n"
            "Lab 2 Start\r\n"
@@ -67,11 +67,15 @@ int main( void ) {    /** Main Function ****/
             __delay_cycles(240e3);
             printf("Red\r\n");
             //P2OUT |= 0x01;
-            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+            //GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
             while(!BMP0){
+               //printf("PRESSEDDDD");
+               GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
                BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
            }
             __delay_cycles(240e3);
+            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+
 
         }else if(!BMP1){
             __delay_cycles(240e3);
@@ -153,9 +157,9 @@ int main( void ) {    /** Main Function ****/
 }    /** End Main Function ****/   
 
 // Add function declarations here as needed
-void GPIOInit(){
+void GPIO_Init(){
     P6DIR |= 0x03; // Set P6.0 and P6.1 (led)
-    P2DIR &= ~0X07; // RGB LED
+    P2DIR |= 0X07; // RGB LED
     GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P4, GPIO_PIN0 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
     PB1 = GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
     BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
