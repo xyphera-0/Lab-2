@@ -51,7 +51,7 @@ int main( void ) {    /** Main Function ****/
 
     while( 1 ) {  // Place code that runs continuously in here
 
-        if(!PB1){
+        if(!PB1){ // if not pressed, allows to figure colors out
             P6OUT &= ~0x03; //biLED is off
             BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
             BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
@@ -139,15 +139,18 @@ int main( void ) {    /** Main Function ****/
 
             }
 
-        }else if(PB1){
+        }else if(PB1){ //button pressed, game starts
+            uint8_t i;
+            for(i = 0; i < 10; i++){
+                gamePattern[i] = rand() % 6;
+            }// generates the numbers corresponding to the bumbers
             __delay_cycles(240e3);
             P6OUT |= 0x01;
             P6OUT &= ~0x02; //Light is Red while pattern is displaying
-
-
-
-
-
+            
+            
+            
+            
             __delay_cycles(240e3);
         }
 
@@ -166,6 +169,7 @@ void GPIO_Init(){
     BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
     BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
     BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
+    __delay_cycles(240e3);
 }
 
 void Timer_Init() {
