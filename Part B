@@ -151,26 +151,26 @@ int main( void ) {    /** Main Function ****/
             P6OUT |= 0x01;
             P6OUT &= ~0x02; //Light is Red while pattern is displaying
             for(i = 0; i < 10; i++) {
-                if(gamePattern(i) == 0) {
+                if(gamePattern[i] == 0) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);//turn on red
-                }else if(gamePattern(i) == 1) {
+                }else if(gamePattern[i] == 1) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //turn on green
-                }else if(gamePattern(i) == 2) {
+                }else if(gamePattern[i] == 2) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on blue
-                }else if(gamePattern(i) == 3) {
+                }else if(gamePattern[i] == 3) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //turn on yellow
-                }else if(gamePattern(i) == 4) {
+                }else if(gamePattern[i] == 4) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on pink
-                }else if(gamePattern(i) == 5) {
+                }else if(gamePattern[i] == 5) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on cyan
                 }
             }
-            
-            
-            
+
+
+
             __delay_cycles(240e3);
         }
 
