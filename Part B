@@ -81,74 +81,63 @@ int main( void ) {    /** Main Function ****/
             __delay_cycles(240e3);
             printf("Green\r\n");
             //P2OUT |= 0x02;
-            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
+            //GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
             while(!BMP1){
+                GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
                BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
-               if(!BMP1) {
-                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-               }
            }
             __delay_cycles(240e3);
+            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+
         }else if(!BMP2){
             __delay_cycles(240e3);
             printf("Blue\r\n");
             //P2OUT |= 0x04;
-            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
             while(!BMP2){
+                GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
                BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
-               if(!BMP2) {
-                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
-               }
-           }
+            }
             __delay_cycles(240e3);
+            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
 
         }else if(!BMP3){
             __delay_cycles(240e3);
             printf("Yellow\r\n");
             //P2OUT |= 0x03;
-            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
-            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); // green pin
             while(!BMP3){
+                GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
+                GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); // green pin
                BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
-               if(!BMP1) {
-                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-
-               }
            }
             __delay_cycles(240e3);
+            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
 
         }else if(!BMP4){
             __delay_cycles(240e3);
             printf("Purple or Magenta\r\n");
             //P2OUT |= 0x05;
-            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
-            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //blue pin
             while(!BMP4){
+                GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
+                GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //blue pin
                BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
-               if(!BMP4) {
-                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
-                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-
-               }
            }
             __delay_cycles(240e3);
+            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+          GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
 
         }else if(!BMP5){
             __delay_cycles(240e3);
             printf("Cyan or Light Blue\r\n");
             //P2OUT |= 0x06;
-            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //green
-            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //blue
-            while(!BMP5){
+               while(!BMP5){
+                   GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //green
+                   GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //blue
                    BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
-                   if(!BMP5) {
-                       GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-                       GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
-
-                   }
                }
             __delay_cycles(240e3);
+            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+           GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
 
         }
 
