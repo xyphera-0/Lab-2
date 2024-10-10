@@ -54,22 +54,6 @@ int main( void ) {    /** Main Function ****/
 
     while( 1 ) {  // Place code that runs continuously in here
 
-        P6DIR |= 0x03; // Set P6.0 and P6.1 (led)
-        P2DIR |= 0X07; // RGB LED
-
-        PB1 = GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
-        BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
-        BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
-        BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
-        BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
-        BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
-        BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
-
-        RED = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN0);
-        GREEN = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN1);
-        BLUE = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN2);
-
-
         if(!BMP0){
             __delay_cycles(240e3);
             printf("Red\r\n");
@@ -112,7 +96,7 @@ int main( void ) {    /** Main Function ****/
 }    /** End Main Function ****/   
 
 // Add function declarations here as needed
-void GPIOInint(){
+void GPIOInit(){
     P6DIR |= 0x03; // Set P6.0 and P6.1 (led)
     P2DIR |= 0X07; // RGB LED
 
