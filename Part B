@@ -15,6 +15,7 @@
 // Add function prototypes here as needed.
 void GPIO_Init();
 void Timer_Init();
+void Timer_ISR();
 
 // Add global variables here as needed.
 //uint8_t biLED = 0; // **used bit masking** PIN 6.0 & 6.1
@@ -33,6 +34,8 @@ int main( void ) {    /** Main Function ****/
     SysInit();
     GPIO_Init();
     Timer_Init();
+
+    Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
 
     printf("\r\n\n"
            "===========\r\n"
@@ -192,8 +195,15 @@ void GPIO_Init(){
 void Timer_Init() {
     config.clockSource = TIMER_A_CLOCKSOURCE_SMCLK;
     config.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_64;
-    config.timerPeriod = 00;
+    config.timerPeriod = 000;
+    config.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_ENABLE;
     Timer_A_configureUpMode(TIMER_A2_BASE, &config);
     Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
+    Timer_A_registerInterrupt(TIMER_A2_BASE,TIMER_A_CCRX_AND_OVERFLOW_INTERRUPT ,Timer_ISR);
+}
+
+void Timer_ISR(){
+
+    Timer_A_clearInterruptFlag(TIMER_A2_BASE);
 }
 // Add interrupt functions last so they are easy to find
