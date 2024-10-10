@@ -62,6 +62,8 @@ int main( void ) {    /** Main Function ****/
        BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
        BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
        BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
+       PB1 =  GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
+
 
         if(!BMP0){
             __delay_cycles(240e3);
@@ -140,10 +142,13 @@ int main( void ) {    /** Main Function ****/
            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
 
         }
+        if(!PB1) {
 
+
+        }
 
     }
-}    /** End Main Function ****/   
+}    /** End Main Function ****/
 
 // Add function declarations here as needed
 void GPIO_Init(){
