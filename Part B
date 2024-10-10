@@ -25,9 +25,21 @@ uint8_t BMP2;
 uint8_t BMP3;
 uint8_t BMP4;
 uint8_t BMP5;
+uint8_t RED;
+uint8_t GREEN;
+uint8_t BLUE;
 Timer_A_UpModeConfig config;
 
 int main( void ) {    /** Main Function ****/
+
+    // Add local variables here as needed.
+
+    // We always call the SysInit function first to set up the
+    // microcontroller for how we are going to use it.
+    SysInit();
+    GPIOInit();
+
+    Timer_Init();
 
     printf("\r\n\n"
             "In this game, there are 10 rounds where the LED will light up \r\n"
@@ -38,23 +50,72 @@ int main( void ) {    /** Main Function ****/
             "======================\r\n"
             "Press button to start!\r\n"
             "======================\r\n");
-    // Add local variables here as needed.
-
-    // We always call the SysInit function first to set up the 
-    // microcontroller for how we are going to use it.
-    SysInit();
-
     // Place initialization code (or run-once) code here
 
-    while( 1 ) {  
-        // Place code that runs continuously in here
+    while( 1 ) {  // Place code that runs continuously in here
 
-    }   
+        P6DIR |= 0x03; // Set P6.0 and P6.1 (led)
+        P2DIR |= 0X07; // RGB LED
+
+        PB1 = GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
+        BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
+        BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
+        BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
+        BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
+        BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
+        BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
+
+        RED = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN0);
+        GREEN = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN1);
+        BLUE = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN2);
+
+
+        if(!BMP0){
+            __delay_cycles(240e3);
+            printf("Red\r\n");
+            P2OUT |= 0x01;
+            __delay_cycles(240e3);
+
+        }else if(!BMP1){
+            __delay_cycles(240e3);
+            printf("Green\r\n");
+            P2OUT |= 0x02;
+
+        }else if(!BMP1){
+            __delay_cycles(240e3);
+            printf("Blue\r\n");
+            P2OUT |= 0x04;
+            __delay_cycles(240e3);
+
+        }else if(!BMP1){
+            __delay_cycles(240e3);
+            printf("Yellow\r\n");
+            P2OUT |= 0x03;
+            __delay_cycles(240e3);
+
+        }else if(!BMP1){
+            __delay_cycles(240e3);
+            printf("Purple or Magenta\r\n");
+            P2OUT |= 0x05;
+            __delay_cycles(240e3);
+
+        }else if(!BMP1){
+            __delay_cycles(240e3);
+            printf("Cyan or Light Blue\r\n");
+            P2OUT |= 0x06;
+            __delay_cycles(240e3);
+
+        }
+
+
+    }
 }    /** End Main Function ****/   
 
 // Add function declarations here as needed
 void GPIOInint(){
     P6DIR |= 0x03; // Set P6.0 and P6.1 (led)
+    P2DIR |= 0X07; // RGB LED
+
     PB1 = GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
     BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
     BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
@@ -63,13 +124,23 @@ void GPIOInint(){
     BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
     BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
 
+    RED = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN0);
+    GREEN = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN1);
+    BLUE = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN2);
+
 }
 
 void Timer_Init() {
+//    config.clockSource = TIMER_A_CLOCKSOURCE_SMCLK;
+  //  config.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_64;
+    //config.timerPeriod = 240e3240e3;
+    //Timer_A_configureUpMode(TIMER_A2_BASE, &config);
+    //Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
     config.clockSource = TIMER_A_CLOCKSOURCE_SMCLK;
-    config.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_64;
-    config.timerPeriod = 000000;
+    config.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_16;
+    config.timerPeriod = 15000;
     Timer_A_configureUpMode(TIMER_A2_BASE, &config);
     Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
 }
 // Add interrupt functions last so they are easy to find
+
