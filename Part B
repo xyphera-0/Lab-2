@@ -40,7 +40,10 @@ int main( void ) {    /** Main Function ****/
     GPIOInit();
 
     Timer_Init();
-
+    printf("\r\n\n"
+           "===========\r\n"
+           "Lab 2 Start\r\n"
+           "===========\r\n");
     printf("\r\n\n"
             "In this game, there are 10 rounds where the LED will light up \r\n"
             "and you will have to press the corresponding bumper button to \r\n"
@@ -54,40 +57,82 @@ int main( void ) {    /** Main Function ****/
 
     while( 1 ) {  // Place code that runs continuously in here
 
+        P6DIR |= 0x03; // Set P6.0 and P6.1 (led)
+        P2DIR |= 0X07; // RGB LED
+
+        PB1 = GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
+        BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
+        BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
+        BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
+        BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
+        BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
+        BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
+
+        RED = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN0);
+        GREEN = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN1);
+        BLUE = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN2);
+
+
         if(!BMP0){
             __delay_cycles(240e3);
             printf("Red\r\n");
-            P2OUT |= 0x01;
+            //P2OUT |= 0x01;
+            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
+            while(!BMP0){
+               BMP0 = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN0);
+               if(!BMP0) {
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+               }
+           }
             __delay_cycles(240e3);
 
         }else if(!BMP1){
             __delay_cycles(240e3);
             printf("Green\r\n");
-            P2OUT |= 0x02;
-
-        }else if(!BMP1){
+            //P2OUT |= 0x02;
+            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
+            while(!BMP1){
+               BMP1 = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN1);
+               if(!BMP1) {
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+               }
+           }
+            __delay_cycles(240e3);
+        }else if(!BMP2){
             __delay_cycles(240e3);
             printf("Blue\r\n");
-            P2OUT |= 0x04;
+            //P2OUT |= 0x04;
+            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
             __delay_cycles(240e3);
 
-        }else if(!BMP1){
+        }else if(!BMP3){
             __delay_cycles(240e3);
             printf("Yellow\r\n");
-            P2OUT |= 0x03;
+            //P2OUT |= 0x03;
+            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
+            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); // green pin
             __delay_cycles(240e3);
 
-        }else if(!BMP1){
+        }else if(!BMP4){
             __delay_cycles(240e3);
             printf("Purple or Magenta\r\n");
-            P2OUT |= 0x05;
+            //P2OUT |= 0x05;
+            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
+            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //blue pin
             __delay_cycles(240e3);
 
-        }else if(!BMP1){
+        }else if(!BMP5){
             __delay_cycles(240e3);
             printf("Cyan or Light Blue\r\n");
-            P2OUT |= 0x06;
+            //P2OUT |= 0x06;
+            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //green
+            GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //blue
             __delay_cycles(240e3);
+
+        }else{
+            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
 
         }
 
@@ -98,7 +143,7 @@ int main( void ) {    /** Main Function ****/
 // Add function declarations here as needed
 void GPIOInit(){
     P6DIR |= 0x03; // Set P6.0 and P6.1 (led)
-    P2DIR |= 0X07; // RGB LED
+    P2DIR &= ~0X07; // RGB LED
 
     PB1 = GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
     BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
