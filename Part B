@@ -57,21 +57,6 @@ int main( void ) {    /** Main Function ****/
 
     while( 1 ) {  // Place code that runs continuously in here
 
-        P6DIR |= 0x03; // Set P6.0 and P6.1 (led)
-        P2DIR |= 0X07; // RGB LED
-
-        PB1 = GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
-        BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
-        BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
-        BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
-        BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
-        BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
-        BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
-
-        RED = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN0);
-        GREEN = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN1);
-        BLUE = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN2);
-
 
         if(!BMP0){
             __delay_cycles(240e3);
@@ -79,7 +64,7 @@ int main( void ) {    /** Main Function ****/
             //P2OUT |= 0x01;
             GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
             while(!BMP0){
-               BMP0 = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN0);
+               BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
                if(!BMP0) {
                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
                }
@@ -92,7 +77,7 @@ int main( void ) {    /** Main Function ****/
             //P2OUT |= 0x02;
             GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
             while(!BMP1){
-               BMP1 = GPIO_getInputPinValue(GPIO_PORT_P2,GPIO_PIN1);
+               BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
                if(!BMP1) {
                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
                }
@@ -103,6 +88,12 @@ int main( void ) {    /** Main Function ****/
             printf("Blue\r\n");
             //P2OUT |= 0x04;
             GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
+            while(!BMP2){
+               BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
+               if(!BMP2) {
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+               }
+           }
             __delay_cycles(240e3);
 
         }else if(!BMP3){
@@ -111,6 +102,14 @@ int main( void ) {    /** Main Function ****/
             //P2OUT |= 0x03;
             GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
             GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); // green pin
+            while(!BMP3){
+               BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
+               if(!BMP1) {
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+
+               }
+           }
             __delay_cycles(240e3);
 
         }else if(!BMP4){
@@ -119,6 +118,14 @@ int main( void ) {    /** Main Function ****/
             //P2OUT |= 0x05;
             GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
             GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //blue pin
+            while(!BMP4){
+               BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
+               if(!BMP4) {
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+
+               }
+           }
             __delay_cycles(240e3);
 
         }else if(!BMP5){
@@ -127,12 +134,15 @@ int main( void ) {    /** Main Function ****/
             //P2OUT |= 0x06;
             GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //green
             GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //blue
-            __delay_cycles(240e3);
+            while(!BMP5){
+                   BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
+                   if(!BMP5) {
+                       GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                       GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
 
-        }else{
-            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-            GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                   }
+               }
+            __delay_cycles(240e3);
 
         }
 
