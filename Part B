@@ -195,7 +195,7 @@ void GPIO_Init(){
 void Timer_Init() {
     config.clockSource = TIMER_A_CLOCKSOURCE_SMCLK;
     config.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_64;
-    config.timerPeriod = 000;
+    config.timerPeriod = 18750;
     config.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_ENABLE;
     Timer_A_configureUpMode(TIMER_A2_BASE, &config);
     Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
