@@ -153,19 +153,33 @@ int main( void ) {    /** Main Function ****/
             for(i = 0; i < 10; i++) {
                 if(gamePattern[i] == 0) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);//turn on red
+                    __delay_cycles(240e3);
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
                 }else if(gamePattern[i] == 1) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //turn on green
+                    __delay_cycles(240e3);
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
                 }else if(gamePattern[i] == 2) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on blue
+                    __delay_cycles(240e3);
+                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
                 }else if(gamePattern[i] == 3) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //turn on yellow
+                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
                 }else if(gamePattern[i] == 4) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on pink
+                    __delay_cycles(240e3);
+                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
                 }else if(gamePattern[i] == 5) {
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on cyan
+                   __delay_cycles(240e3);
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
                 }
             }
 
