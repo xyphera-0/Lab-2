@@ -1,177 +1,223 @@
 ////////////////////////////////////////////////////////////////////////
-//** ENGR-2350 Activity: Stopwatch Template Project
-//** NAME: Gizelle Ojeda-Ericksen
-//** RIN: 662065015
+//** ENGR-2350 Template Project 
+//** NAME: Xio Pelaez Cuacua & Gizelle Ojeda-Ericksen
+//** RIN: 662068537 & 662065015
+//** This is the base project for several activities and labs throughout
+//** the course.  The outline provided below isn't necessarily *required*
+//** by a C program; however, this format is required within ENGR-2350
+//** to ease debugging/grading by the staff.
 ////////////////////////////////////////////////////////////////////////
 
+// We'll always add this include statement. This basically takes the
+// code contained within the "engr_2350_msp432.h" file and adds it here.
 #include "engr2350_msp432.h"
 
-// Function Prototypes
-void Port4_ISR();
+// Add function prototypes here as needed.
 void GPIO_Init();
 void Timer_Init();
 void Timer_ISR();
-void UpdateTime(uint8_t * time_arry); // Take time array and add 1/100 s to it.
-// **ACTIVITY** Add needed function prototypes
 
-// Global Variables
-Timer_A_UpModeConfig Config;
-uint8_t total_time[4]; // array to keep track of [tenths of seconds,seconds,minutes,hours]
-uint8_t lap_time[4]; // Current lap time (previous lap not stored, only printed once)
-uint8_t lap_num = 1; // Current lap number, start on lap 1
-uint8_t print_flag = 1; // Flag to note that time should be printed on screen.
-                        // We start this at 1 to print time at 0 (instead of leaving blank)
-uint8_t counter = 0; // For toggling the LED
-// **ACTIVITY** Add remaining variables needed here
-uint8_t stop_flag = 0;
-uint8_t interrupt_flag = 0;
+// Add global variables here as needed.
+//uint8_t biLED = 0; // **used bit masking** PIN 6.0 & 6.1
+uint8_t PB1; // PIN 5.6
+uint8_t BMP0, BMP1, BMP2, BMP3, BMP4, BMP5;
+uint32_t gamePattern[10];
+uint32_t rand();
+Timer_A_UpModeConfig config;
 
-// Main Function
-int main(void){
+int main( void ) {    /** Main Function ****/
+
+    // Add local variables here as needed.
+
+    // We always call the SysInit function first to set up the
+    // microcontroller for how we are going to use it.
     SysInit();
     GPIO_Init();
     Timer_Init();
-    printf("Lap #\tLap Time\tTotal Time \r\n"); // Print header
-    while( 1 ) {
-        // Place code that runs continuously in here
 
-        // Check if new lap is requested
-        if(interrupt_flag) {
-            putchar('\n'); // Make a new line in the printing for next lap
-            // **ACTIVITY** Reset flag, reset lap time array and increment lap number
-            interrupt_flag = 0;
-            lap_num++;
-            int i;
-            for(i=0;i<4;i++) {
-                lap_time[i] = 0;
+    Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
+
+    printf("\r\n\n"
+           "===========\r\n"
+           "Lab 2 Start\r\n"
+           "===========\r\n");
+    printf("\r\n\n"
+            "In this game, there are 10 rounds where the LED will light up \r\n"
+            "and you will have to press the corresponding bumper button to \r\n"
+            "the color. You start with one color and it will increase each \r\n"
+            "round by one. Press the wrong color, start all over. Press the\r\n"
+            "right one, continue until the 10th round and win!\r\n\n\n"
+            "======================\r\n"
+            "Press button to start!\r\n"
+            "======================\r\n");
+    // Place initialization code (or run-once) code here
+
+    while( 1 ) {  // Place code that runs continuously in here
+
+        if(!PB1){ // if not pressed, allows to figure colors out
+            P6OUT &= ~0x03; //biLED is off
+            BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
+            BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
+            BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
+            BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
+            BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
+            BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
+            PB1 =  GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
+
+            if(!BMP0){
+                __delay_cycles(240e3);
+                printf("Red\r\n");
+                //P2OUT |= 0x01;
+                //GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+                while(!BMP0){
+                   //printf("PRESSEDDDD");
+                   GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
+                   BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
+               }
+                __delay_cycles(240e3);
+                GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+
+
+            }else if(!BMP1){
+                __delay_cycles(240e3);
+                printf("Green\r\n");
+                //P2OUT |= 0x02;
+                //GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                while(!BMP1){
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                   BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
+               }
+                __delay_cycles(240e3);
+                GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+
+            }else if(!BMP2){
+                __delay_cycles(240e3);
+                printf("Blue\r\n");
+                //P2OUT |= 0x04;
+                while(!BMP2){
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                   BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
+                }
+                __delay_cycles(240e3);
+                GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+
+            }else if(!BMP3){
+                __delay_cycles(240e3);
+                printf("Yellow\r\n");
+                //P2OUT |= 0x03;
+                while(!BMP3){
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); // green pin
+                   BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
+               }
+                __delay_cycles(240e3);
+                GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+
+            }else if(!BMP4){
+                __delay_cycles(240e3);
+                printf("Purple or Magenta\r\n");
+                //P2OUT |= 0x05;
+                while(!BMP4){
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //blue pin
+                   BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
+               }
+                __delay_cycles(240e3);
+                GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+
+            }else if(!BMP5){
+                __delay_cycles(240e3);
+                printf("Cyan or Light Blue\r\n");
+                //P2OUT |= 0x06;
+                   while(!BMP5){
+                       GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //green
+                       GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //blue
+                       BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
+                   }
+                __delay_cycles(240e3);
+                GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+
             }
 
+        }else if(PB1){ //button pressed, game starts
+            uint8_t i;
+            for(i = 0; i < 10; i++){
+                gamePattern[i] = rand() % 6;
+            }// generates the numbers corresponding to the bumbers
+            __delay_cycles(240e3);
+            P6OUT |= 0x01;
+            P6OUT &= ~0x02; //Light is Red while pattern is displaying
+            for(i = 0; i < 10; i++) {
+                if(gamePattern[i] == 0) {
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);//turn on red
+                    __delay_cycles(240e3);
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+                }else if(gamePattern[i] == 1) {
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //turn on green
+                    __delay_cycles(240e3);
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                }else if(gamePattern[i] == 2) {
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on blue
+                    __delay_cycles(240e3);
+                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                }else if(gamePattern[i] == 3) {
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //turn on yellow
+                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+                }else if(gamePattern[i] == 4) {
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on pink
+                    __delay_cycles(240e3);
+                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+                }else if(gamePattern[i] == 5) {
+                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                   GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on cyan
+                   __delay_cycles(240e3);
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                }
+            }
+
+
+
+            __delay_cycles(240e3);
         }
-        // Check if time to update print. This is complete, no changes needed
-        if( print_flag ) {
-            // This print takes ~65k cycles, or 2.7ms at 24 MHz
-            printf("\r%6u\t%02u:%02u:%02u.%02u\t%02u:%02u:%02u.%02u\t",lap_num,lap_time[3],lap_time[2],lap_time[1],lap_time[0]
-                                                              ,total_time[3],total_time[2],total_time[1],total_time[0]);
-            print_flag = 0;
-        }
+
     }
-}    /** End Main Function ****/   
+}    /** End Main Function ****/
 
 // Add function declarations here as needed
-void GPIO_Init( ) {
-    // **ACTIVITY**
-    // Configure pin for P1.0 for LED1 to blink
-    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
-
-    // Configure used GPIO - P1.1,P1.4 for Devboard switches S1 and S2, OR
-                       //  - P4.0,P4.2 for RSLK bumpers BMP0 and BMP1
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P4, GPIO_PIN0);
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P4, GPIO_PIN2);
-    GPIO_registerInterrupt(GPIO_PORT_P4,Port4_ISR );
-    GPIO_registerInterrupt(GPIO_PORT_P4,Port4_ISR);
-    GPIO_interruptEdgeSelect(GPIO_PORT_P4,GPIO_PIN0 | GPIO_PIN2, GPIO_HIGH_TO_LOW_TRANSITION);
-    GPIO_enableInterrupt(GPIO_PORT_P4, GPIO_PIN0 | GPIO_PIN2);
-    // The pins should be configured as inputs and should trigger
-    // the associated interrupt ON PRESS ONLY.
-
-
+void GPIO_Init(){
+    P6DIR |= 0x03; // Set P6.0 and P6.1 (led)
+    P2DIR |= 0X07; // RGB LED
+    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P4, GPIO_PIN0 | GPIO_PIN2 | GPIO_PIN3 | GPIO_PIN5 | GPIO_PIN6 | GPIO_PIN7);
+    PB1 = GPIO_getInputPinValue(GPIO_PORT_P5,GPIO_PIN6);
+    BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
+    BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
+    BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
+    BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
+    BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
+    BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
+    __delay_cycles(240e3);
 }
 
-void Timer_Init(){
-    // **ACTIVITY** Configure a timer to run at 100 Hz and trigger overflow interrupt
-    Config.clockSource = TIMER_A_CLOCKSOURCE_SMCLK;
-    Config.timerPeriod=15000.00;
-    Config.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_16;
-    Config.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_ENABLE;
-    Timer_A_configureUpMode(TIMER_A2_BASE, &Config);
+void Timer_Init() {
+    config.clockSource = TIMER_A_CLOCKSOURCE_SMCLK;
+    config.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_64;
+    config.timerPeriod = 000;
+    config.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_ENABLE;
+    Timer_A_configureUpMode(TIMER_A2_BASE, &config);
     Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
-    Timer_A_registerInterrupt(TIMER_A2_BASE, TIMER_A_CCRX_AND_OVERFLOW_INTERRUPT, Timer_ISR);
-
-
+    Timer_A_registerInterrupt(TIMER_A2_BASE,TIMER_A_CCRX_AND_OVERFLOW_INTERRUPT ,Timer_ISR);
 }
 
-// Use this function to update the time arrays. Note that the argument requested is
-// the time array itself (arrays are by definition pointers, no & needed).
-void UpdateTime(uint8_t * time_arry){
-    time_arry[0]++;  // Increment tenths of seconds
-    if(time_arry[0] == 100){  // If a whole second has passed...
-        time_arry[0] = 0;    // Reset tenths of seconds
-        time_arry[1]++;      // And increment seconds
-        if(time_arry[1] == 60){ // If a minute has passed...
-            time_arry[1] = 0;   // Reset seconds
-            time_arry[2]++;     // Increment minutes
-            if(time_arry[2] == 60){  // and so on...
-                time_arry[2] = 0;
-                time_arry[3]++;
-                if(time_arry[3] == 24){
-                    time_arry[3] = 0;
-                }
-            }
-        }
-    }
-}
+void Timer_ISR(){
 
-// **ACTIVITY** Interrupt for the timer
-void Timer_ISR() {
     Timer_A_clearInterruptFlag(TIMER_A2_BASE);
-        counter++;
-        if(counter == 100){
-            GPIO_toggleOutputOnPin(GPIO_PORT_P1, GPIO_PIN0);
-            counter = 0;
-            UpdateTime(lap_time);
-            UpdateTime(total_time);
-            print_flag = 1;
-        }
 }
-
-// **ACTIVITY** Interrupt for the switches/bumpers
-void Port4_ISR() {
-    __delay_cycles(240e3); // 10 ms delay (24 MHz clock)
-
-        // Next: get the list of pins that may have triggered the interrupt
-    uint8_t active_pins = GPIO_getEnabledInterruptStatus(GPIO_PORT_P4);
-
-        // Check to see if GPIO_PIN1 interrupt is active
-    if(active_pins & GPIO_PIN0){
-            // Clear the GPIO_PIN1 interrupt
-        GPIO_clearInterruptFlag(GPIO_PORT_P4,GPIO_PIN0);
-            // It is possible that bouncing from the LOW_TO_HIGH transition can also
-            // trigger the interrupt. The if statement below is ensuring that the pin's
-            // value after debouncing (above) is LOW; which verifies that the transition
-            // was in fact a HIGH_TO_LOW transition, not LOW_TO_HIGH
-        if(!GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0)){
-            // P3.1 press detected, do whatever is needed
-            if(stop_flag == 0) { // if timer has stopped, start
-                stop_flag = 1;
-            }else if(stop_flag == 1) { //if timer is going, stop
-                printf("Getting here\r\n");
-                stop_flag = 0;
-            }
-        }
-    }
-        // Repeat for GPIO_PIN3 (P3.3).
-    if(active_pins & GPIO_PIN2){
-        GPIO_clearInterruptFlag(GPIO_PORT_P4,GPIO_PIN2);
-        if(!GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2)){
-            // P3.3 Press detected, do whatever is needed
-            if(stop_flag == 0) { //timer has stopped
-                printf("Here\r\n");
-                //clear lap
-                int i;
-                for(i = 0;i<4;i++){
-                    lap_time[i] = 0;
-                    total_time[i] = 0;
-                }
-                //reset lap to 0
-                lap_num = 0;
-                //reset times values printed using print_flag
-                print_flag = 1;
-            }else if(stop_flag == 1){ //timer hasn't stopped
-                //set flag to denote that a new lap has started
-                interrupt_flag = 1;
-                //main loop: replace 0 in the if(0) to check if new lap has started
-
-            }
-        }
-    }
-}
+// Add interrupt functions last so they are easy to find
