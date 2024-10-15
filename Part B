@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////
 //** ENGR-2350 Template Project 
 //** NAME: Xio Pelaez Cuacua & Gizelle Ojeda-Ericksen
@@ -24,6 +25,9 @@ uint8_t BMP0, BMP1, BMP2, BMP3, BMP4, BMP5;
 uint32_t gamePattern[10];
 uint32_t rand();
 Timer_A_UpModeConfig config;
+uint8_t counter = 0; // For toggling the LED
+uint8_t flag = 0;
+uint8_t colorCounter = 0;
 
 int main( void ) {    /** Main Function ****/
 
@@ -51,6 +55,11 @@ int main( void ) {    /** Main Function ****/
             "Press button to start!\r\n"
             "======================\r\n");
     // Place initialization code (or run-once) code here
+
+    uint8_t i;
+    for(i = 0; i < 10; i++){
+        gamePattern[i] = rand() % 6;
+    }// generates the numbers corresponding to the bumbers
 
     while( 1 ) {  // Place code that runs continuously in here
 
@@ -142,50 +151,6 @@ int main( void ) {    /** Main Function ****/
 
             }
 
-        }else if(PB1){ //button pressed, game starts
-            uint8_t i;
-            for(i = 0; i < 10; i++){
-                gamePattern[i] = rand() % 6;
-            }// generates the numbers corresponding to the bumbers
-            __delay_cycles(240e3);
-            P6OUT |= 0x01;
-            P6OUT &= ~0x02; //Light is Red while pattern is displaying
-            for(i = 0; i < 10; i++) {
-                if(gamePattern[i] == 0) {
-                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);//turn on red
-                    __delay_cycles(240e3);
-                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-                }else if(gamePattern[i] == 1) {
-                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //turn on green
-                    __delay_cycles(240e3);
-                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-                }else if(gamePattern[i] == 2) {
-                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on blue
-                    __delay_cycles(240e3);
-                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
-                }else if(gamePattern[i] == 3) {
-                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
-                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //turn on yellow
-                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-                }else if(gamePattern[i] == 4) {
-                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
-                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on pink
-                    __delay_cycles(240e3);
-                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
-                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-                }else if(gamePattern[i] == 5) {
-                    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
-                   GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on cyan
-                   __delay_cycles(240e3);
-                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
-                   GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
-                }
-            }
-
-
-
-            __delay_cycles(240e3);
         }
 
     }
@@ -209,7 +174,7 @@ void GPIO_Init(){
 void Timer_Init() {
     config.clockSource = TIMER_A_CLOCKSOURCE_SMCLK;
     config.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_64;
-    config.timerPeriod = 18750;
+    config.timerPeriod = 18750; //elapses every 50ms
     config.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_ENABLE;
     Timer_A_configureUpMode(TIMER_A2_BASE, &config);
     Timer_A_startCounter(TIMER_A2_BASE, TIMER_A_UP_MODE);
@@ -219,5 +184,85 @@ void Timer_Init() {
 void Timer_ISR(){
 
     Timer_A_clearInterruptFlag(TIMER_A2_BASE);
+    counter++;
+    if(PB1){ //button pressed, game starts
+            printf("BUTTON PRESSED");
+            __delay_cycles(240e3);
+            P6OUT |= 0x01;
+            P6OUT &= ~0x02; //Light is Red while pattern is displaying
+            uint8_t i;
+            for(i = 0; i < 10; i++) {
+                if(gamePattern[i] == 0) {
+                    if(counter == 10){
+                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);//turn on red
+                        printf("RED\r\n");
+                        colorCounter++;
+                        __delay_cycles(240e3);
+                        GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+                        counter = 0;
+                    }
+                }else if(gamePattern[i] == 1) {
+                    if(counter == 10){
+                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //turn on green
+                        printf("GREEN\r\n");
+                        colorCounter++;
+                        __delay_cycles(240e3);
+                       GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                        counter = 0;
+                    }
+                }else if(gamePattern[i] == 2) {
+                    if(counter == 10){
+                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on blue
+                        printf("BLUE\r\n");
+                        colorCounter++;
+                        __delay_cycles(240e3);
+                        GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                        counter = 0;
+                    }
+                }else if(gamePattern[i] == 3) {
+                    if(counter == 10){
+                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
+                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //turn on yellow
+                        printf("YELLOW\r\n");
+                        colorCounter++;
+                        __delay_cycles(240e3);
+                        GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                        GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+                        counter = 0;
+                    }
+                }else if(gamePattern[i] == 4) {
+                    if(counter == 10){
+                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
+                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on pink
+                        printf("PURPLE\r\n");
+                        colorCounter++;
+                        __delay_cycles(240e3);
+                        GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                        GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
+                        counter = 0;
+                    }
+                }else if(gamePattern[i] == 5) {
+                    if(counter == 10){
+                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                       GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2); //turn on cyan
+                       printf("CYAN\r\n");colorCounter++;
+                       __delay_cycles(240e3);
+                       colorCounter++;
+                       GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
+                       GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
+                       counter = 0;
+                    }
+                }
+            }
+            if(colorCounter == 10){
+                Timer_A_stopTimer(TIMER_A2_BASE);
+                colorCounter = 0;
+            }
+
+
+            __delay_cycles(240e3);
+        }
+
+
 }
 // Add interrupt functions last so they are easy to find
