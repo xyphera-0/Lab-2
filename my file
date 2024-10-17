@@ -106,7 +106,7 @@ int main( void ) {    /** Main Function ****/
 
             }else if(!BMP2){
                 __delay_cycles(240e3);
-                printf("Blue\r\n");
+                printf("Blue in main while\r\n");
                 //P2OUT |= 0x04;
                 while(!BMP2){
                     GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
@@ -157,7 +157,10 @@ int main( void ) {    /** Main Function ****/
             }
 
         }else if(PB1) {
-
+//            P6OUT |= 0x01;
+//            P6OUT &= ~0x02;
+            GPIO_setOutputHighOnPin(GPIO_PORT_P6, GPIO_PIN1);
+            GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN0);
             printf("button pressed \r\n");
             game();
         }
@@ -190,26 +193,36 @@ void Timer_Init() {
     Timer_A_registerInterrupt(TIMER_A2_BASE,TIMER_A_CCRX_AND_OVERFLOW_INTERRUPT ,Timer_ISR);
 }
 void game(){
+        BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
+        BMP1 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN2);
+        BMP2 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN3);
+        BMP3 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN5);
+        BMP4 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN6);
+        BMP5 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN7);
         uint8_t j;
         uint8_t i;
-        __delay_cycles(240e3);
-        P6OUT |= 0x01;
-        P6OUT &= ~0x02; //Light is Red while pattern is displaying
+        __delay_cycles(2400e3);
         //printf("voidgame");
         for(i = 0; i <= counter; i++) {
             if(gamePattern[i] == 0) {
                //printf("game0");
-               __delay_cycles(240e3);
+               __delay_cycles(2400e3);
                printf("Red\r\n");
                //P2OUT |= 0x01;
                //GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
-                  GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
-               __delay_cycles(240e3);
+//               while(!BMP0){
+//                  //printf("PRESSEDDDD");
+//                  GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
+//                  BMP0 = GPIO_getInputPinValue(GPIO_PORT_P4,GPIO_PIN0);
+//              }
+//     //              __delay_cycles(240e3);
+                 GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);
+               __delay_cycles(2400e3);
                GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
                //printf("later");
 
                }else if(gamePattern[i] == 1){
-                   __delay_cycles(240e3);
+                   __delay_cycles(2400e3);
                    printf("Green\r\n");
                    //P2OUT |= 0x02;
                    //GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1);
@@ -218,15 +231,15 @@ void game(){
                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
 
                }else if(gamePattern[i] == 2){
-                   __delay_cycles(240e3);
-                   printf("Blue\r\n");
+                   __delay_cycles(2400e3);
+                   printf("Blue in game\r\n");
                    //P2OUT |= 0x04;
                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN2);
-                   __delay_cycles(240e3);
+                   __delay_cycles(2400e3);
                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
 
                }else if(gamePattern[i] == 3){
-                   __delay_cycles(240e3);
+                   __delay_cycles(2400e3);
                    printf("Yellow\r\n");
                    //P2OUT |= 0x03;
                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
@@ -236,7 +249,7 @@ void game(){
                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
 
                }else if(gamePattern[i] == 4){
-                   __delay_cycles(240e3);
+                   __delay_cycles(2400e3);
                    printf("Purple or Magenta\r\n");
                    //P2OUT |= 0x05;
                        GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0); //red pin
@@ -246,7 +259,7 @@ void game(){
                    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
 
                }else if(gamePattern[i] == 5){
-                   __delay_cycles(240e3);
+                   __delay_cycles(2400e3);
                    printf("Cyan or Light Blue\r\n");
                    //P2OUT |= 0x06;
                           GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN1); //green
@@ -257,7 +270,11 @@ void game(){
 
                }
 
-        }for(j = 0; j <= counter; j++){
+        }
+        GPIO_setOutputHighOnPin(GPIO_PORT_P6, GPIO_PIN0);
+        GPIO_setOutputLowOnPin(GPIO_PORT_P6, GPIO_PIN1);
+        printf("Player's turn before j loop\r\n");
+        for(j = 0; j <= counter; j++){
             printf("Round %u \r\n", j);
             if(counter == 10){
                printf("you win! \r\n");
@@ -265,8 +282,7 @@ void game(){
                break;
            }
             for(i=0; i <=counter; i++ ){
-                P6OUT &= ~0x01;
-                P6OUT |= 0x02;
+                printf("ENTERED SECOND i LOOP\r\n");
                 if(!BMP0){
                     __delay_cycles(240e3);
                     printf("Red\r\n");
@@ -282,6 +298,8 @@ void game(){
                     GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
                     if(playerAnswer[j] != gamePattern[i]){
                         printf("incorrect \r\n");
+                        P6OUT |= 0x01;
+                        P6OUT &= ~0x02;
                         break;
                     }else{
                         counter+=1;
@@ -302,6 +320,8 @@ void game(){
                     GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN1);
                     if(playerAnswer[j] != gamePattern[i]){
                        printf("incorrect\r\n");
+                       P6OUT |= 0x01;
+                       P6OUT &= ~0x02;
                        break;
                    }else{
                        counter+=1;
@@ -310,6 +330,7 @@ void game(){
 
                 }else if(!BMP2){
                     __delay_cycles(240e3);
+                    printf("issue part\r\n");
                     printf("Blue\r\n");
                     //P2OUT |= 0x04;
                     while(!BMP2){
@@ -321,6 +342,8 @@ void game(){
                     GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
                     if((playerAnswer[j] != gamePattern[i])){
                        printf("incorrect\r\n");
+                       P6OUT |= 0x01;
+                       P6OUT &= ~0x02;
                        break;
                    }else{
                        counter+=1;
@@ -342,6 +365,8 @@ void game(){
                     GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
                     if(playerAnswer[j] != gamePattern[i]){
                        printf("incorrect\r\n");
+                       P6OUT |= 0x01;
+                       P6OUT &= ~0x02;
                        break;
                    }else{
                        counter+=1;
@@ -363,6 +388,8 @@ void game(){
                     GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);
                     if(playerAnswer[j] != gamePattern[i]){
                        printf("incorrect\r\n");
+                       P6OUT |= 0x01;
+                       P6OUT &= ~0x02;
                        break;
                    }else{
                        counter+=1;
@@ -384,6 +411,8 @@ void game(){
                     GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN2);
                     if(playerAnswer[j] != gamePattern[i]){
                        printf("incorrect\r\n");
+                       P6OUT |= 0x01;
+                       P6OUT &= ~0x02;
                        break;
                    }else{
                        counter+=1;
